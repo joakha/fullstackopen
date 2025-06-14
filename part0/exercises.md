@@ -1,6 +1,6 @@
 0.4: New note diagram
 
-    ```sh
+    ```
 sequenceDiagram
     participant browser
     participant server
@@ -37,7 +37,7 @@ sequenceDiagram
 
 0.5: Single page app diagram
 
-    ```sh
+    ```
 sequenceDiagram
     participant browser
     participant server
@@ -67,7 +67,7 @@ sequenceDiagram
 
 0.6: New note in Single page app diagram
 
-    ```sh
+    ```
 sequenceDiagram
     participant browser
     participant server
