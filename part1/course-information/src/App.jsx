@@ -1,5 +1,5 @@
 import Header from "./Header"
-import Content from "./Context"
+import Content from "./Content"
 import Total from "./Total"
 
 const App = () => {
