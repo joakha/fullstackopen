@@ -3,11 +3,13 @@ import Persons from './Persons'
 import PersonForm from './PersonForm'
 import Filter from './Filter'
 import personService from './personService'
+import Notification from './Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newPerson, setNewPerson] = useState({ name: "", number: "" })
   const [searchWord, setSearchWord] = useState("");
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     const getPersons = async () => {
@@ -45,6 +47,7 @@ const App = () => {
       const newPersons = persons.concat(postedPerson);
       setPersons(newPersons);
       setNewPerson({ name: "", number: "" });
+      setNotification({message: `Added ${postedPerson.name}`, type: "success"});
     } catch (err) {
       console.log(err);
     }
@@ -59,6 +62,7 @@ const App = () => {
         })
         setPersons(newPersons);
         setNewPerson({ name: "", number: "" });
+        setNotification({message: `Updated number for ${updatedPerson.name}`, type: "success"});
       } catch (err) {
         console.log(err);
       }
@@ -70,8 +74,11 @@ const App = () => {
       try {
         const deletedPerson = await personService.deletePerson(personToDelete.id);
         setPersons(persons.filter(person => person.id !== deletedPerson.id));
+        setNotification({message: `Deleted ${deletedPerson.name}`, type: "success"});
       } catch (err) {
         console.log(err);
+        err.status === 404 && 
+        setNotification({message: `Information of ${personToDelete.name} has already been removed from server`, type: "failure"});
       }
     }
   }
@@ -79,7 +86,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      {notification && <Notification notification={notification} setNotification={setNotification} />}
       <Filter setSearchWord={setSearchWord} searchWord={searchWord} />
 
       <PersonForm addPerson={addPerson} handleChange={handleChange} newPerson={newPerson} />
