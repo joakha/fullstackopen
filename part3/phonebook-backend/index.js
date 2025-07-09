@@ -1,8 +1,21 @@
-import express from "express"
+const express = require("express");
+const morgan = require("morgan");
+const path = require("path");
+const cors = require("cors");
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cors());
+
+morgan.token('content', (req) => {
+    return req.body ? JSON.stringify(req.body) : '';
+});
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :content'));
+
+app.use(express.static(path.join(__dirname, "../phonebook-frontend/dist")));
 
 let persons = [
     {
@@ -58,9 +71,13 @@ app.delete("/api/persons/:id", (req, res) => {
 
     if (!id) return res.status(400).json({ message: "id of person required" });
 
+    const personToDelete = persons.find(person => person.id === id);
+
+    if (!personToDelete) return res.status(404).json({ message: "person not found" });
+
     persons = persons.filter(person => person.id !== id);
 
-    return res.status(204).end();
+    return res.status(200).json(personToDelete);
 });
 
 app.post("/api/persons", (req, res) => {
@@ -74,10 +91,10 @@ app.post("/api/persons", (req, res) => {
     const personId = Math.floor(Math.random() * 1000000);
     const newPerson = { ...person, id: personId.toString() };
     persons.push(newPerson);
-    return res.status(201).json({ message: "person added to phonebook!" });
+    return res.status(201).json(newPerson);
 });
 
-const port = 3001;
+const port = process.env.PORT || 5001;
 
 app.listen(port);
 
