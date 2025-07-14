@@ -2,6 +2,23 @@ const express = require("express");
 const morgan = require("morgan");
 const path = require("path");
 const cors = require("cors");
+const Person = require("./models/person");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const url = process.env.MONGODB_URI;
+
+(async () => {
+    try {
+        console.log('connecting to', url);
+        await mongoose.connect(url);
+        console.log('connected to MongoDB');
+    } catch (err) {
+        console.log('error connecting to MongoDB:', err.message)
+    }
+})();
 
 const app = express();
 
