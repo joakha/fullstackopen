@@ -10,7 +10,7 @@ dotenv.config();
 
 const url = process.env.MONGODB_URI;
 
-(async () => {
+const connectToMongoDb = async () => {
     try {
         console.log('connecting to', url);
         await mongoose.connect(url);
@@ -18,7 +18,9 @@ const url = process.env.MONGODB_URI;
     } catch (err) {
         console.log('error connecting to MongoDB:', err.message)
     }
-})();
+};
+
+connectToMongoDb();
 
 const app = express();
 
@@ -57,8 +59,14 @@ let persons = [
     }
 ]
 
-app.get("/api/persons", (req, res) => {
-    return res.status(200).json(persons);
+app.get("/api/persons", async (req, res, next) => {
+    try {
+        const persons = await Person.find({});
+        if (!persons) return res.status(404).json({ message: "No persons in db" });
+        return res.status(200).json(persons);
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.get("/info", (req, res) => {
@@ -70,46 +78,85 @@ app.get("/info", (req, res) => {
         `)
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", async (req, res, next) => {
 
     const { id } = req.params;
 
     if (!id) return res.status(400).json({ message: "id of person required" });
 
-    const person = persons.find(person => person.id === id);
-
-    if (!person) return res.status(404).json({ message: "no person found" });
-
-    return res.status(200).json(person);
+    try {
+        const person = await Person.findById(id);
+        if (!person) return res.status(404).json({ message: "no person found" });
+        return res.status(200).json(person);
+    } catch (err) {
+        next(err);
+    }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", async (req, res, next) => {
     const { id } = req.params;
 
     if (!id) return res.status(400).json({ message: "id of person required" });
 
-    const personToDelete = persons.find(person => person.id === id);
-
-    if (!personToDelete) return res.status(404).json({ message: "person not found" });
-
-    persons = persons.filter(person => person.id !== id);
-
-    return res.status(200).json(personToDelete);
+    try {
+        const personToDelete = await Person.findByIdAndDelete(id);
+        if (!personToDelete) return res.status(404).json({ message: "person not found" });
+        return res.status(200).json(personToDelete);
+    } catch (err) {
+        next(err)
+    }
 });
 
-app.post("/api/persons", (req, res) => {
+app.put("/api/persons/:id", async (req, res, next) => {
+    const { id } = req.params;
+
+    if (!id) return res.status(400).json({ message: "id of person required" });
+
+    const updatedData = req.body;
+
+    if (!updatedData) return res.status(400).json({ message: "Update data required!" });
+
+    try {
+        const personToUpdate = await Person.findByIdAndUpdate(id, updatedData, { new: true });
+        if (!personToUpdate) return res.status(404).json({ message: "person not found" });
+        return res.status(200).json(personToUpdate);
+    } catch (err) {
+        next(err)
+    }
+});
+
+app.post("/api/persons", async (req, res, next) => {
     const person = req.body;
     if (!person) return res.status(400).json({ message: "person info missing from request" });
     const { name, number } = person;
     if (!name) return res.status(400).json({ message: "name missing from request" });
     if (!number) return res.status(400).json({ message: "number missing from request" });
-    const nameExists = persons.some(person => person.name.toLowerCase() === name.toLowerCase());
-    if (nameExists) return res.status(400).json({ message: "name must be unique" });
-    const personId = Math.floor(Math.random() * 1000000);
-    const newPerson = { ...person, id: personId.toString() };
-    persons.push(newPerson);
-    return res.status(201).json(newPerson);
+
+    try {
+        const newPerson = new Person({
+            name: name,
+            number: number
+        })
+        const savedPerson = await newPerson.save();
+        return res.status(201).json(savedPerson);
+    } catch (err) {
+        next(err);
+    }
 });
+
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message)
+
+    if (error.name === 'CastError') {
+        return response.status(400).send({ message: 'malformatted id' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ message: error.message })
+    }
+
+    next(error)
+}
+
+app.use(errorHandler);
 
 const port = process.env.PORT || 5001;
 

@@ -18,7 +18,7 @@ const deletePerson = async (personId) => {
 }
 
 const updateNumber = async (personId, newData) => {
-    const response = await axios.patch(`${baseURL}/api/persons/${personId}`, newData)
+    const response = await axios.put(`${baseURL}/api/persons/${personId}`, newData)
     return response.data;
 }
 

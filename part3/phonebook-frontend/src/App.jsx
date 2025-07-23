@@ -39,7 +39,7 @@ const App = () => {
 
     if (existingPerson) {
       updatePersonNumber(existingPerson);
-      return
+      return;
     }
 
     try {
@@ -50,13 +50,14 @@ const App = () => {
       setNotification({message: `Added ${postedPerson.name}`, type: "success"});
     } catch (err) {
       console.log(err);
+      setNotification({message: err.response.data.message, type: "failure"});
     }
   }
 
   const updatePersonNumber = async (existingPerson) => {
     if (confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
       try {
-        const updatedPerson = await personService.updateNumber(existingPerson.id, { number: newPerson.number });
+        const updatedPerson = await personService.updateNumber(existingPerson.id, newPerson);
         const newPersons = persons.map((person) => {
           return person.id === updatedPerson.id ? updatedPerson : person;
         })
