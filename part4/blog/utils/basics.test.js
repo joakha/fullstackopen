@@ -1,6 +1,7 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
 const listHelper = require('./list_helper')
+const Blog = require('../models/blog')
 
 test('dummy returns one', () => {
   const blogs = []
@@ -26,9 +27,19 @@ describe('total likes', () => {
   })
 })
 
-describe("most liked blog", () => {
-  test('found correctly', () => {
-    const result = listHelper.favoriteBlog(listHelper.blogs)
-    assert.deepStrictEqual(result, listHelper.blogs[2])
+test('most liked blog found correctly', () => {
+  const result = listHelper.favoriteBlog(listHelper.blogs)
+  assert.deepStrictEqual(result, listHelper.blogs[2])
+})
+
+test('default value for likes is 0', () => {
+  const newBlog = new Blog({
+    _id: '6b913bb82c67b987345e28a9',
+    title: 'A Mathematical Theory of Communication',
+    author: 'Claude E. Shannon',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    __v: 0
   })
+
+  assert.strictEqual(newBlog.likes, 0);
 })

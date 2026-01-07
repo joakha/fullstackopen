@@ -65,6 +65,7 @@ const blogs = [
     author: "johnny johnson",
     url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     likes: 12,
+    user: "64f1c2a9b8e7d45f9a12c3e4",
     __v: 0
   },
   {
