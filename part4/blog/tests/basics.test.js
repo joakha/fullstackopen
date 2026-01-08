@@ -1,6 +1,6 @@
 const { test, describe } = require('node:test')
 const assert = require('node:assert')
-const listHelper = require('./list_helper')
+const listHelper = require('../utils/list_helper')
 const Blog = require('../models/blog')
 
 test('dummy returns one', () => {
@@ -30,6 +30,26 @@ describe('total likes', () => {
 test('most liked blog found correctly', () => {
   const result = listHelper.favoriteBlog(listHelper.blogs)
   assert.deepStrictEqual(result, listHelper.blogs[2])
+})
+
+test('author with most blogs found correctly', () => {
+  const authorWithMostBlogs = {
+    author: "Robert C. Martin",
+    blogs: 3
+  };
+  const result = listHelper.mostBlogs(listHelper.blogs)
+
+  assert.deepStrictEqual(result, authorWithMostBlogs)
+})
+
+test('author with most likes found correctly', () => {
+  const authorWithMostBlogs = {
+    author: "Edsger W. Dijkstra",
+    likes: 17
+  };
+  const result = listHelper.mostLikes(listHelper.blogs)
+
+  assert.deepStrictEqual(result, authorWithMostBlogs)
 })
 
 test('default value for likes is 0', () => {

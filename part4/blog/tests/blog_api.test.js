@@ -1,7 +1,7 @@
 const { test, describe, after, beforeEach } = require('node:test')
 const assert = require('node:assert')
 const app = require('../app')
-const listHelper = require('./list_helper')
+const listHelper = require('../utils/list_helper')
 const supertest = require('supertest')
 const Blog = require('../models/blog')
 const mongoose = require('mongoose')

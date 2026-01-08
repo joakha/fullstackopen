@@ -23,6 +23,84 @@ const favoriteBlog = (blogs) => {
     return mostLikedBlog;
 }
 
+const mostBlogs = (blogs) => {
+
+  const authorsAndBlogCounts = [];
+  const authors = []
+
+  blogs.forEach((blog) => {
+    if (!authors.includes(blog.author)) {
+      authors.push(blog.author)
+    }
+  })
+
+  authors.forEach((author) => {
+    let blogCount = 0;
+
+    blogs.forEach((blog) => {
+      if (blog.author === author) {
+        blogCount +=1;
+      }
+    })
+
+    authorsAndBlogCounts.push({
+      author: author,
+      blogs: blogCount
+    })
+  })
+
+  let highestBlogCount = 0;
+
+  authorsAndBlogCounts.forEach((item) => {
+    if (item.blogs > highestBlogCount) {
+      highestBlogCount = item.blogs
+    }
+  })
+
+  const authorWithMostBlogs = authorsAndBlogCounts.find((item) => item.blogs === highestBlogCount);
+
+  return authorWithMostBlogs;
+}
+
+const mostLikes = (blogs) => {
+
+  const authorsAndLikeCounts = [];
+  const authors = []
+
+  blogs.forEach((blog) => {
+    if (!authors.includes(blog.author)) {
+      authors.push(blog.author)
+    }
+  })
+
+  authors.forEach((author) => {
+    let authorLikeCount = 0;
+
+    blogs.forEach((blog) => {
+      if (blog.author === author) {
+        authorLikeCount += blog.likes
+      }
+    })
+
+    authorsAndLikeCounts.push({
+      author: author,
+      likes: authorLikeCount
+    })
+  })
+
+  let highestLikeCount = 0;
+
+  authorsAndLikeCounts.forEach((item) => {
+    if (item.likes > highestLikeCount) {
+      highestLikeCount = item.likes
+    }
+  })
+
+  const authorWithMostLikes = authorsAndLikeCounts.find((item) => item.likes === highestLikeCount);
+
+  return authorWithMostLikes;
+}
+
 const listWithOneBlog = [
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -98,6 +176,8 @@ module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
+  mostBlogs,
+  mostLikes,
   blogs,
   listWithOneBlog
 }
