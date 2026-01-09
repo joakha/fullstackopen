@@ -38,7 +38,13 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
     return response.status(400).json({ error: 'userId not valid' })
   }
 
-  await Blog.deleteOne({_id: request.params.id});
+  await Blog.deleteOne({ _id: request.params.id });
+
+  user.blogs = user.blogs.filter(
+    blogId => blogId.toString() !== request.params.id
+  );
+
+  await user.save();
 
   response.status(204).end();
 })
@@ -46,7 +52,7 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body
 
-  const blog = await Blog.findById(request.params.id)
+  const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
 
   if (!blog) {
     return response.status(404).end()
