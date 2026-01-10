@@ -1,4 +1,3 @@
-import blogService from '../services/blogs'
 import { useState } from 'react'
 
 const BlogForm = ({ createBlog }) => {
@@ -25,15 +24,15 @@ const BlogForm = ({ createBlog }) => {
   return (
     <form onSubmit={addBlog}>
       <div>
-        title: <input name='title' onChange={handleChange} value={newBlog.title} />
+        title: <input name='title' placeholder='title' onChange={handleChange} value={newBlog.title} />
       </div>
 
       <div>
-        author: <input name='author' onChange={handleChange} value={newBlog.author} />
+        author: <input name='author' placeholder='author' onChange={handleChange} value={newBlog.author} />
       </div>
 
       <div>
-        url: <input name='url' onChange={handleChange} value={newBlog.url} />
+        url: <input name='url' placeholder='url' onChange={handleChange} value={newBlog.url} />
       </div>
 
       <div>

@@ -9,10 +9,11 @@ import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [showAll, setShowAll] = useState(true)
   const [notification, setNotification] = useState(null)
   const [user, setUser] = useState(null)
   const blogFormRef = useRef()
+
+  const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -77,6 +78,20 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    if (confirm(`Do you want to delete ${blog.title} by ${blog.author}?`)) {
+      try {
+        const deletedBlog = await blogService.deleteBlog(blog.id);
+        setBlogs(blogs.filter(blog => blog.id !== deletedBlog.id));
+        setNotification({ message: `Deleted ${deletedBlog.title}`, type: "success" });
+      } catch (err) {
+        console.log(err);
+        err.status === 404 &&
+          setNotification({ message: `Information of ${blog.title} has already been removed from server`, type: "failure" });
+      }
+    }
+  }
+
   return (
     <>
       <div>
@@ -110,11 +125,13 @@ const App = () => {
       </div>
 
       <div>
-        {blogs.map(blog =>
+        {sortedBlogs.map(blog =>
           <Blog
             key={blog.id}
             blog={blog}
             updateBlogLikes={updateBlogLikes}
+            user={user}
+            deleteBlog={deleteBlog}
           />
         )}
       </div>

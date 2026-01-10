@@ -8,7 +8,7 @@ const Notification = ({ notification, setNotification }) => {
         }, 5000)
 
         return () => clearTimeout(timeOut)
-    }, [])
+    }, [setNotification])
 
     return (
         <div className={notification.type === "success" ? "success" : "failure"}>{notification.message}</div>
